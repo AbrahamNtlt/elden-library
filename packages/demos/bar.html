@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>3d柱状图与折线图</title>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #222;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 设置水平垂直居中 */
+
+        input {
+            background: none;
+            border: none;
+            outline: none;
+            vertical-align: middle;
+        }
+
+        /* 防止未加载完成显示undefined */
+        [v-cloak] {
+            display: none;
+        }
+
+        /* 去掉button默认样式 */
+        button {
+            border: none;
+            background: transparent;
+            outline: none;
+        }
+
+        /* flex布局相关样式 */
+        .flex-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .j_c {
+            justify-content: center;
+        }
+
+        .j_b {
+            justify-content: space-between;
+        }
+
+        /**滚动条的宽度*/
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        /* 滚动条的滑块 */
+        ::-webkit-scrollbar-thumb {
+            background-color: #eaecf1;
+            border-radius: 3px;
+        }
+    </style>
+    <style>
+        body {
+            background: linear-gradient(225deg, #95a4b6, #d9e1eba3);
+        }
+
+        .container {
+            width: 700px;
+            height: 500px;
+            padding: 20px;
+            border-radius: 20px;
+            background: linear-gradient(225deg, #95a4b6, #d9e1eba3);
+            box-shadow: 2px 10px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script
+            type="text/javascript"
+            src="https://fastly.jsdelivr.net/npm/echarts@5.3.1-rc.1/dist/echarts.min.js"
+    ></script>
+    <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/echarts-gl@2/dist/echarts-gl.min.js"
+    ></script>
+</head>
+<body>
+<div class="container">
+    <div class="chart" id="chart"></div>
+</div>
+</body>
+<script>
+    const dom = document.getElementById("chart");
+    const myChart = echarts.init(dom);
+    let color = [
+        "#3362EA",
+        "#31BCA8",
+        "#FFA70D",
+        "#C137F1",
+        "#31A9EE",
+        "#FB7124",
+        "#7347F0",
+        "#3ECC77",
+        "#646060",
+    ];
+
+    const fakeData = [
+        {
+            date: "2022-11",
+            join: 1230,
+            apply: 302,
+        },
+        {
+            date: "2022-12",
+            join: 2133,
+            apply: 1928,
+        },
+        {
+            date: "2023-01",
+            join: 477,
+            apply: 1000,
+        },
+        {
+            date: "2023-02",
+            join: 1456,
+            apply: 1234,
+        },
+        {
+            date: "2023-03",
+            join: 3334,
+            apply: 3338,
+        },
+        {
+            date: "2023-04",
+            join: 421,
+            apply: 23,
+        },
+    ];
+
+    function solve_xData() {
+        const x = [];
+        fakeData.forEach((item, idx) => {
+            x.push(item.date);
+        });
+        return x;
+    }
+
+    let type = "bar3D"; // bar3D、line3D
+    function solve_series() {
+        const data1 = [];
+        const data2 = [];
+        fakeData.forEach((item, idx) => {
+            data1.push({
+                value: [idx, 0, item.join],
+                itemStyle: {
+                    color: color[idx],
+                },
+            });
+            data2.push({
+                value: [idx, 1, item.apply],
+                itemStyle: {
+                    color: color[idx],
+                },
+            });
+        });
+        return [
+            {
+                name: "参会",
+                type: "line3D",
+                shading: "lambert",
+                data: data1,
+            },
+            {
+                name: "报名",
+                type: "bar3D",
+                shading: "lambert",
+                data: data2,
+            },
+        ];
+    }
+
+    let yData = ["参会", "报名"];
+    //渲染图表
+    const renderChart = (myChart) => {
+        const options = {
+            color: color,
+            grid: {
+                left: "0%", //图表距边框的距离
+                right: "3%",
+                top: "0%",
+                bottom: "10%",
+                containLabel: true,
+            },
+            legend: {},
+            tooltip: {
+                formatter: function (params) {
+                    let xIndex = params.value[0];
+                    let tip = yData[params.value[1]] + ": " + params.value[2];
+                    return (
+                        solve_xData()[xIndex] +
+                        "<br />" +
+                        params.marker +
+                        tip
+                    );
+                },
+            },
+            xAxis3D: {
+                nameGap: 1,
+                type: "category",
+                data: solve_xData(),
+            },
+            yAxis3D: {
+                name: "",
+                type: "category",
+                data: yData,
+            },
+            zAxis3D: {
+                name: "",
+                type: "value",
+            },
+            grid3D: {},
+            series: solve_series(),
+        };
+        myChart.setOption(options);
+    };
+    renderChart(myChart);
+</script>
+</html>

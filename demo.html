@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- 双飞翼布局 -->
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>双飞翼布局</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				font-size: 25px;
+				text-align: center;
+			}
+
+			header,
+			footer {
+				height: 40px;
+				width: 100%;
+				background: skyblue;
+			}
+
+			footer {
+				clear: both;
+			}
+
+			.center {
+				float: left;
+				width: 100%;
+				/*左栏上去到第一行*/
+				height: 500px;
+				background: plum;
+			}
+
+			/*给内部 div 添加 margin，把内容放到中间栏，其实整个背景还是 100%*/
+			#inside {
+				margin: 0 300px 0 150px;
+				height: 500px;
+			}
+
+			.left {
+				float: left;
+				width: 150px;
+				height: 500px;
+				margin-left: -100%;
+				background: pink;
+			}
+
+			.right {
+				float: left;
+				width: 300px;
+				height: 500px;
+				margin-left: -300px;
+				background: hotpink;
+			}
+		</style>
+	</head>
+	<body>
+		<header>header</header>
+		<div class="center">
+			<div class="inside">center</div>
+		</div>
+		<div class="left">left</div>
+		<div class="right">right</div>
+		<footer>footer</footer>
+	</body>
+</html>
